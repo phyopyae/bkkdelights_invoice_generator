@@ -2,9 +2,10 @@ package com.psychojunior.invoice.template.service;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.ArrayList;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -14,21 +15,22 @@ import org.springframework.util.ResourceUtils;
 import com.psychojunior.invoice.template.model.Invoice;
 import com.psychojunior.invoice.template.model.InvoiceItem;
 
+import net.sf.jasperreports.engine.JREmptyDataSource;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
-import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
-import net.sf.jasperreports.engine.util.JRLoader;
-import net.sf.jasperreports.engine.util.JRSaver;
 
 @Service
 public class InvoiceService {
 
 	@Value("${invoice.itemcount}")
 	private Integer INITIAL_INVOICE_ITEM_COUNT;
+	
+	@Value("${invoice.filetype}")
+	private String INVOICE_FILE_TYPE;
 	
 	public Invoice getInitialInvoice() {
 		Invoice invoice = new Invoice();
@@ -46,11 +48,9 @@ public class InvoiceService {
 		try {
 			JasperReport jasperReport;
 
-			jasperReport = (JasperReport) JRLoader.loadObject(ResourceUtils.getFile("invoice_template.jasper"));
 			File file = ResourceUtils.getFile("classpath:invoice_template.jrxml");
 			jasperReport = JasperCompileManager.compileReport(file.getAbsolutePath());
-			JRSaver.saveObject(jasperReport, "invoice_template.jasper");
-
+			
 			reportContent = printJasper(jasperReport, items);
 			
 		} catch (FileNotFoundException | JRException e) {
@@ -64,18 +64,32 @@ public class InvoiceService {
 		byte[] reportContent = null;
 		JasperPrint jasperPrint = null;
 		
-		List<Invoice> itemsList = new ArrayList<Invoice>();
-		itemsList.add(invoice);
-		JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(itemsList);
 		Map<String, Object> parameters = new HashMap<>();
 		parameters.put("title", "Invoice");
+		parameters.put("customerName", invoice.getCustomerName());
+		parameters.put("customerContact", invoice.getContactNumber());
+		parameters.put("customerAddress", invoice.getCustomerAddress());
+		parameters.put("invoiceNumber", invoice.getInvoiceNumber());
+		parameters.put("invoiceDate", convertToDate(invoice.getInvoiceDate()));
+		parameters.put("totalAmount", invoice.getTotalAmount());
+		parameters.put("depositAmount", invoice.getDepositAmount());
+		parameters.put("invoiceItems", invoice.getItemsList());
 
 		try {
-			jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, dataSource);
+			jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, new JREmptyDataSource(1));
 			reportContent = JasperExportManager.exportReportToPdf(jasperPrint);
 		} catch (JRException e) {
 			e.printStackTrace();
 		}
 		return reportContent;
+	}
+	
+	public String getFileName(Invoice invoice) {
+		return "Invoice_".concat(invoice.getInvoiceNumber().concat(".").concat(INVOICE_FILE_TYPE));
+	}
+	
+	private Date convertToDate(LocalDate invoiceDate) {
+		Date convertedDate = Date.from(invoiceDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
+		return convertedDate;
 	}
 }

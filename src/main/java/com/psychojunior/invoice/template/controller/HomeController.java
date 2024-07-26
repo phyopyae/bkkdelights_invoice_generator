@@ -1,6 +1,11 @@
 package com.psychojunior.invoice.template.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.http.ContentDisposition;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -43,10 +48,19 @@ public class HomeController {
     }
     
     @PostMapping(value = "/saveInvoice", params = "print")
-    public String printInvoice(@ModelAttribute("invoice") Invoice invoice, Model model) {
-    	invoiceService.getInvoiceReport(invoice);
-    	model.addAttribute("invoice", invoice);
-    	System.out.println(invoice.toString());
-        return "index";
+    public ResponseEntity<ByteArrayResource> printInvoice(@ModelAttribute("invoice") Invoice invoice, Model model) {
+    	byte[] report = invoiceService.getInvoiceReport(invoice);
+    	
+    	String fileName = invoiceService.getFileName(invoice);
+    	
+        ByteArrayResource resource = new ByteArrayResource(report);
+        return ResponseEntity.ok()
+                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                .contentLength(resource.contentLength())
+                .header(HttpHeaders.CONTENT_DISPOSITION,
+                        ContentDisposition.attachment()
+                            .filename(fileName)
+                            .build().toString())
+                .body(resource);
     }
 }
