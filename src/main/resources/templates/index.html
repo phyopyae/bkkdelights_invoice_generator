@@ -2,90 +2,102 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 
 <head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Vintage Style</title>
-	<link rel="stylesheet" href="styles.css">
-	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vintage Style</title>
+<link rel="stylesheet" href="styles.css">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 
 <body>
 	<div class="container">
 		<header>
-			<img th:width="100" th:src="@{/images/logo.jpg}"/>
+			<img th:width="100" th:src="@{/images/logo.jpg}" />
 			<h1>Invoice Generator</h1>
 		</header>
 		<section class="content">
 			<div class="container mt-5">
 				<h2>Invoice Form</h2>
-				<form action="#" th:action="@{/saveInvoice}" th:object="${invoice}" method="post">
+				<form action="#" th:action="@{/saveInvoice}" th:object="${invoice}"
+					method="post">
 					<table>
 						<div class="form-group">
 							<tr>
 								<td><label for="invoiceNumber">Invoice Number</label></td>
-								<td><input type="text" class="form-control-lg" id="invoiceNumber"
-										th:field="*{invoiceNumber}"></td>
+								<td><input type="text" class="form-control-lg"
+									id="invoiceNumber" th:field="*{invoiceNumber}"></td>
 								<td><label for="invoiceDate">Invoice Date</label></td>
-								<td><input type="date" class="form-control-lg" id="invoiceDate"
-										th:field="*{invoiceDate}">
-								</td>
+								<td><input type="date" class="form-control-lg"
+									id="invoiceDate" th:field="*{invoiceDate}"></td>
 							</tr>
 						</div>
 						<div class="form-group">
 							<tr>
 								<td><label for="customerName">Customer Name</label></td>
-								<td><input type="text" class="form-control-lg" id="customerName"
-										th:field="*{customerName}"></td>
+								<td><input type="text" class="form-control-lg"
+									id="customerName" th:field="*{customerName}"></td>
 								<td><label for="customerName">Contact Number</label></td>
-								<td><input type="text" class="form-control-lg" id="contactNumber"
-										th:field="*{contactNumber}"></td>
+								<td><input type="text" class="form-control-lg"
+									id="contactNumber" th:field="*{contactNumber}"></td>
 							</tr>
 						</div>
 						<div class="form-group">
 							<tr>
 								<td><label for="customerAddress">Customer Address</label></td>
-								<td><textarea class="form-control-lg" rows="4" th:field="*{customerAddress}" /></td>
+								<td><textarea class="form-control-lg" rows="4"
+										th:field="*{customerAddress}" /></td>
 								<td><label for="depositAmount">Deposit Amount</label></td>
-								<td><input type="number" class="form-control-lg" id="depositAmount"
-										th:field="*{depositAmount}"></td>
+								<td><input type="number" class="form-control-lg"
+									id="depositAmount" th:field="*{depositAmount}"></td>
 							</tr>
 						</div>
-						</table>
-						<table>
+					</table>
+					<table>
 						<div>
 							<tr>
 								<th>Item #</th>
 								<th>Description</th>
-					        	<th>Quantity</th>
-					        	<th>Unit Price</th>
-					        	<th>Amount</th>
+								<th>Quantity</th>
+								<th>Unit Price</th>
+								<th>Amount</th>
 							</tr>
 						</div>
 						<div>
-							<tr th:each="book, itemStat : *{itemsList}">
-								<td><input type="text" class="form-control-sm" th:field="*{itemsList[__${itemStat.index}__].itemNumber}" id="itemNumber" placeholder="Item#"></td>
-								<td><input type="text" class="form-control-lg" th:field="*{itemsList[__${itemStat.index}__].itemDescription}" id="itemDescription" placeholder="Description"></td>
-					        	<td><input type="number" class="form-control-sm" th:field="*{itemsList[__${itemStat.index}__].itemCount}" id="itemCount" placeholder="Quantity"></td>
-					        	<td><input type="number" class="form-control-sm" th:field="*{itemsList[__${itemStat.index}__].itemPrice}" id="itemPrice" placeholder="Unit Price"></td>
-					        	<td><input type="number" class="form-control-sm" th:field="*{itemsList[__${itemStat.index}__].itemTotalAmt}" id="itemTotalAmt" placeholder="Amount" disabled></td>
-							</tr>
-							<tr>
-								<td></td>
-								<td></td>
-								<td></td>
-								<td><label for="totalAmount">Total Amount</label></td>
-								<td><input type="number" class="form-control-sm" id="totalAmount"
-										th:field="*{totalAmount}" disabled></td>
+							<!-- Add the 'item-row' class to each tr element -->
+							<tr th:each="book, itemStat : *{itemsList}" class="item-row">
+								<td><input type="text" class="form-control-sm"
+									th:field="*{itemsList[__${itemStat.index}__].itemNumber}"
+									id="itemNumber" placeholder="Item#"></td>
+								<td><input type="text" class="form-control-lg"
+									th:field="*{itemsList[__${itemStat.index}__].itemDescription}"
+									id="itemDescription" placeholder="Description"></td>
+								<td><input type="number" class="form-control-sm"
+									th:field="*{itemsList[__${itemStat.index}__].itemCount}"
+									id="itemCount" placeholder="Quantity"
+									oninput="calculateAmount()"></td>
+								<td><input type="number" class="form-control-sm"
+									th:field="*{itemsList[__${itemStat.index}__].itemPrice}"
+									id="itemPrice" placeholder="Unit Price"
+									oninput="calculateAmount()"></td>
+								<td><input type="number" class="form-control-sm"
+									th:field="*{itemsList[__${itemStat.index}__].itemTotalAmt}"
+									id="itemTotalAmt" placeholder="Amount" disabled></td>
 							</tr>
 						</div>
+						<tr>
+							<td colspan="4"><label for="totalAmount">Total
+									Amount</label></td>
+							<td><input type="number" class="form-control-sm"
+								id="totalAmount" th:field="*{totalAmount}" disabled></td>
+						</tr>
 					</table>
-					<button type="submit" name="calculate" class="btn btn-primary">Calculate</button>
+
 					<button type="submit" name="print" class="btn btn-primary">Print</button>
 				</form>
 			</div>
 		</section>
 		<footer>
-			<p>&copy; 2024 Techbook Myanmar. All rights reserved.</p>
+			<p>&copy; 2025 Techbook Myanmar. All rights reserved.</p>
 		</footer>
 	</div>
 	<script src="script.js"></script>
