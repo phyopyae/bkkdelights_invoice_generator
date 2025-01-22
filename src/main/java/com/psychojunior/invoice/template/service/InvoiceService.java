@@ -2,13 +2,17 @@ package com.psychojunior.invoice.template.service;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ResourceUtils;
 
@@ -31,6 +35,9 @@ public class InvoiceService {
 	
 	@Value("${invoice.filetype}")
 	private String INVOICE_FILE_TYPE;
+	
+    @Autowired
+    private ResourceLoader resourceLoader;
 	
 	public Invoice getInitialInvoice() {
 		Invoice invoice = new Invoice();
@@ -64,22 +71,27 @@ public class InvoiceService {
 		byte[] reportContent = null;
 		JasperPrint jasperPrint = null;
 		
-		Map<String, Object> parameters = new HashMap<>();
-		parameters.put("title", "Invoice");
-		parameters.put("customerName", invoice.getCustomerName());
-		parameters.put("customerContact", invoice.getContactNumber());
-		parameters.put("customerAddress", invoice.getCustomerAddress());
-		parameters.put("invoiceNumber", invoice.getInvoiceNumber());
-		parameters.put("invoiceDate", convertToDate(invoice.getInvoiceDate()));
-		parameters.put("totalAmount", invoice.getTotalAmount());
-		parameters.put("depositAmount", invoice.getDepositAmount());
-		parameters.put("invoiceItems", invoice.getItemsList());
-
 		try {
+			Resource imageResource = resourceLoader.getResource("classpath:/static/images/logo.jpg");
+	
+			Map<String, Object> parameters = new HashMap<>();
+			parameters.put("title", "Invoice");
+			parameters.put("customerName", invoice.getCustomerName());
+			parameters.put("customerContact", invoice.getContactNumber());
+			parameters.put("customerAddress", invoice.getCustomerAddress());
+			parameters.put("invoiceNumber", invoice.getInvoiceNumber());
+			parameters.put("invoiceDate", convertToDate(invoice.getInvoiceDate()));
+			parameters.put("totalAmount", invoice.getTotalAmount());
+			parameters.put("depositAmount", invoice.getDepositAmount());
+			parameters.put("invoiceItems", invoice.getItemsList());
+			parameters.put("logo", imageResource.getFile());
+
 			jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, new JREmptyDataSource(1));
 			reportContent = JasperExportManager.exportReportToPdf(jasperPrint);
 		} catch (JRException e) {
 			e.printStackTrace();
+		} catch (IOException ioEx) {
+			ioEx.printStackTrace();
 		}
 		return reportContent;
 	}
