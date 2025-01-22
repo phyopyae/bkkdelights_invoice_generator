@@ -17,7 +17,7 @@ import com.psychojunior.invoice.template.service.CalculateService;
 import com.psychojunior.invoice.template.service.InvoiceService;
 
 @Controller
-public class HomeController {
+public class InvoiceController {
 
 	@Autowired
 	InvoiceService invoiceService;
@@ -40,7 +40,6 @@ public class HomeController {
 
     @PostMapping(value = "/saveInvoice", params = "calculate")
     public String saveInvoice(@ModelAttribute("invoice") Invoice invoice, Model model) {
-        
     	calculateService.calculateAmount(invoice);
     	model.addAttribute("invoice", invoice);
     	System.out.println(invoice.toString());
