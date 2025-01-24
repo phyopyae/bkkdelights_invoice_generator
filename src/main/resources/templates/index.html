@@ -81,17 +81,17 @@
 									oninput="calculateAmount()"></td>
 								<td><input type="number" class="form-control-sm"
 									th:field="*{itemsList[__${itemStat.index}__].itemTotalAmt}"
-									id="itemTotalAmt" placeholder="Amount" disabled></td>
+									id="itemTotalAmt" placeholder="Amount"></td>
 							</tr>
 						</div>
 						<tr>
 							<td colspan="4"><label for="totalAmount">Total
 									Amount</label></td>
 							<td><input type="number" class="form-control-sm"
-								id="totalAmount" th:field="*{totalAmount}" disabled></td>
+								id="totalAmount" th:field="*{totalAmount}"></td>
 						</tr>
 					</table>
-
+					<button type="submit" name="save" class="btn btn-primary">Save</button>
 					<button type="submit" name="print" class="btn btn-primary">Print</button>
 				</form>
 			</div>
