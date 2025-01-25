@@ -12,9 +12,14 @@ function calculateAmount() {
 		let amountInput = row.querySelector("input[id$='itemTotalAmt']");
 
 		// Parse the values as numbers
-		let quantity = parseFloat(quantityInput.value) || 0; // Default to 0 if not a valid number
-		let unitPrice = parseFloat(unitPriceInput.value) || 0; // Default to 0 if not a valid number
+		let quantity = parseFloat(quantityInput.value);
+		let unitPrice = parseFloat(unitPriceInput.value);
 
+		// Check if both values are valid numbers (not NaN)
+		if (isNaN(quantity) || isNaN(unitPrice)) {
+			return;
+		}
+		
 		// Calculate the amount
 		let amount = quantity * unitPrice;
 
@@ -29,7 +34,21 @@ function calculateAmount() {
 	document.getElementById("totalAmount").value = totalAmount.toFixed(2); // Display total with two decimal places
 }
 
-// Event listener to call calculateAmount when quantity or unit price changes
+function formatDate(dateStr) {
+	let parts = dateStr.split('/');
+
+	if (parts.length === 3) {
+	    let month = parts[0].padStart(2, '0');
+	    let day = parts[1].padStart(2, '0');
+	    let year = '20' + parts[2];
+
+	    return year + '-' + month + '-' + day;
+	} else {
+	    console.error("Invalid date format.");
+	    return null;
+	}
+}
+
 document.addEventListener("DOMContentLoaded", function() {
 	// Add event listeners for item count and price inputs
 	let quantityInputs = document.querySelectorAll("input[id$='itemCount']");
@@ -37,4 +56,14 @@ document.addEventListener("DOMContentLoaded", function() {
 
 	quantityInputs.forEach(input => input.addEventListener("input", calculateAmount));
 	priceInputs.forEach(input => input.addEventListener("input", calculateAmount));
+	
+	let invoiceDateInput = document.getElementById("invoiceDate");
+
+	let dateValue = invoiceDateInput.defaultValue;
+
+	if (dateValue) {
+		let formattedDate = formatDate(dateValue);
+
+		invoiceDateInput.value = formattedDate;
+	}
 });
