@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 
-import com.psychojunior.invoice.template.model.Invoice;
+import com.psychojunior.invoice.template.model.InvoiceDto;
 import com.psychojunior.invoice.template.service.CalculateService;
 import com.psychojunior.invoice.template.service.InvoiceService;
 
@@ -27,27 +27,35 @@ public class InvoiceController {
 	
 	@GetMapping("/")
 	private String getHomepage(Model model) {
-		Invoice invoice = invoiceService.getInitialInvoice();
+		InvoiceDto invoice = invoiceService.getInitialInvoice();
 		model.addAttribute("invoice", invoice);
         return "index";
 	}
 	
 	@GetMapping("/invoice")
     public String showInvoiceForm(Model model) {
-        model.addAttribute("invoice", new Invoice());
+        model.addAttribute("invoice", new InvoiceDto());
         return "invoice";
     }
 
     @PostMapping(value = "/saveInvoice", params = "calculate")
-    public String saveInvoice(@ModelAttribute("invoice") Invoice invoice, Model model) {
+    public String calculateInvoice(@ModelAttribute("invoice") InvoiceDto invoice, Model model) {
     	calculateService.calculateAmount(invoice);
     	model.addAttribute("invoice", invoice);
     	System.out.println(invoice.toString());
         return "index";
     }
     
+    @PostMapping(value = "/saveInvoice", params = "save")
+    public String saveInvoice(@ModelAttribute("invoice") InvoiceDto invoiceDto, Model model) {
+    	invoiceService.save(invoiceDto);
+    	model.addAttribute("invoice", invoiceDto);
+    	model.addAttribute("isSave", true);
+        return "index";
+    }
+    
     @PostMapping(value = "/saveInvoice", params = "print")
-    public ResponseEntity<ByteArrayResource> printInvoice(@ModelAttribute("invoice") Invoice invoice, Model model) {
+    public ResponseEntity<ByteArrayResource> printInvoice(@ModelAttribute("invoice") InvoiceDto invoice, Model model) {
     	byte[] report = invoiceService.getInvoiceReport(invoice);
     	
     	String fileName = invoiceService.getFileName(invoice);

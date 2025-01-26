@@ -2,7 +2,7 @@ package com.psychojunior.invoice.template.model;
 
 import java.math.BigDecimal;
 
-public class InvoiceItem {
+public class InvoiceItemDto {
 
 	private String itemNumber;
 	private String itemDescription;

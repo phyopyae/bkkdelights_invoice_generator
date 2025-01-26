@@ -5,7 +5,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Invoice {
+public class InvoiceDto {
 
 	private String invoiceNumber;
 	private LocalDate invoiceDate;
@@ -14,7 +14,7 @@ public class Invoice {
 	private String contactNumber;
 	private BigDecimal depositAmount;
 	private BigDecimal totalAmount;
-	private List<InvoiceItem> itemsList = new ArrayList<InvoiceItem>();
+	private List<InvoiceItemDto> itemsList = new ArrayList<InvoiceItemDto>();
 
 	public String getInvoiceNumber() {
 		return invoiceNumber;
@@ -72,11 +72,11 @@ public class Invoice {
 		this.totalAmount = totalAmount;
 	}
 
-	public List<InvoiceItem> getItemsList() {
+	public List<InvoiceItemDto> getItemsList() {
 		return itemsList;
 	}
 
-	public void setItemsList(List<InvoiceItem> itemsList) {
+	public void setItemsList(List<InvoiceItemDto> itemsList) {
 		this.itemsList = itemsList;
 	}
 

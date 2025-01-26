@@ -4,16 +4,16 @@ import java.math.BigDecimal;
 
 import org.springframework.stereotype.Service;
 
-import com.psychojunior.invoice.template.model.Invoice;
-import com.psychojunior.invoice.template.model.InvoiceItem;
+import com.psychojunior.invoice.template.model.InvoiceDto;
+import com.psychojunior.invoice.template.model.InvoiceItemDto;
 
 @Service
 public class CalculateService {
 
-	public void calculateAmount(Invoice invoice) {
+	public void calculateAmount(InvoiceDto invoice) {
 		BigDecimal totalAmount = BigDecimal.ZERO;
 		
-		for (InvoiceItem item : invoice.getItemsList()) {
+		for (InvoiceItemDto item : invoice.getItemsList()) {
 			
 			if (item.getItemCount() == null) {
 				continue;
