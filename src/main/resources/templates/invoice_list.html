@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Invoices</title>
+<link rel="stylesheet"
+	href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+	<div class="container mt-5">
+		<h1 class="text-center">Invoices</h1>
+
+		<div class="mb-3">
+			<a href="/invoice/add" class="btn btn-success">Add Invoice</a>
+		</div>
+
+		<table class="table table-bordered">
+			<thead>
+				<tr>
+					<th>Invoice Number</th>
+					<th>Invoice Date</th>
+					<th>Customer Name</th>
+					<th>Total Amount</th>
+					<th>Actions</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:each="invoice : ${invoices}">
+					<td th:text="${invoice.invoiceNumber}"></td>
+					<td th:text="${invoice.invoiceDate}"></td>
+					<td th:text="${invoice.customerName}"></td>
+					<td th:text="${invoice.totalAmount}"></td>
+					<td><a
+						th:href="@{/invoice/{invoiceNumber}(invoiceNumber=${invoice.invoiceNumber})}"
+						class="btn btn-primary">View Details</a>
+
+						<button class="btn btn-success" onclick="window.print()">Print</button>
+
+						<form
+							th:action="@{/invoice/delete/{invoiceNumber}(invoiceNumber=${invoice.invoiceNumber})}"
+							method="post" style="display: inline-block;">
+							<button type="submit" class="btn btn-danger"
+								onclick="return confirm('Are you sure you want to delete this invoice?')">Delete</button>
+						</form></td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+</body>
+</html>
