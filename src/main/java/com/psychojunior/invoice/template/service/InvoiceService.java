@@ -11,6 +11,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -62,6 +63,15 @@ public class InvoiceService {
 		return invoice;
 	}
 
+	public List<InvoiceDto> getAllInvoiceList() {
+		List<Invoice> invoiceList = invoiceRepo.findAll();
+		List<InvoiceDto> invoiceDtoList = new ArrayList<InvoiceDto>();
+		for (Invoice invoice : invoiceList) {
+			invoiceDtoList.add(convertToInvoiceDto(invoice));
+		}
+		return invoiceDtoList;
+	}
+
 	public InvoiceDto save(InvoiceDto invoiceDto) {
 		saveInvoice(invoiceDto);
 		saveInvoiceItem(invoiceDto.getInvoiceNumber(), invoiceDto.getItemsList());
@@ -80,6 +90,36 @@ public class InvoiceService {
 		invoice.setInvoiceDate(invoiceDto.getInvoiceDate());
 		invoice.setPrinted(false);
 		invoiceRepo.save(invoice);
+	}
+
+	private InvoiceDto convertToInvoiceDto(Invoice invoice) {
+		InvoiceDto dto = new InvoiceDto();
+		dto.setContactNumber(invoice.getContactNumber());
+		dto.setCustomerAddress(invoice.getCustomerAddress());
+		dto.setCustomerName(invoice.getCustomerName());
+		dto.setDepositAmount(invoice.getDepositAmount() != null ? invoice.getDepositAmount() : BigDecimal.ZERO);
+		dto.setInvoiceDate(invoice.getInvoiceDate());
+		dto.setInvoiceNumber(invoice.getInvoiceNumber());
+		dto.setTotalAmount(invoice.getTotalAmount());
+		return dto;
+	}
+
+	private List<InvoiceItemDto> convertToInvoiceItemDtoList(List<InvoiceItem> invoiceItemList) {
+		List<InvoiceItemDto> invoiceItemDtoList = new ArrayList<InvoiceItemDto>();
+		for (InvoiceItem item : invoiceItemList) {
+			if (item.getItemNumber().isBlank()) {
+				continue;
+			}
+
+			InvoiceItemDto itemDto = new InvoiceItemDto();
+			itemDto.setItemNumber(item.getItemNumber());
+			itemDto.setItemDescription(item.getItemDescription());
+			itemDto.setItemPrice(item.getItemPrice());
+			itemDto.setItemTotalAmt(item.getItemTotalAmt());
+			itemDto.setItemCount(item.getItemCount());
+			invoiceItemDtoList.add(itemDto);
+		}
+		return invoiceItemDtoList;
 	}
 
 	public void saveInvoiceItem(String invoiceNumber, List<InvoiceItemDto> itemDtoList) {
@@ -104,25 +144,7 @@ public class InvoiceService {
 		invoiceItemRepo.saveAll(invoiceItemList);
 	}
 
-	public byte[] getInvoiceReport(InvoiceDto items) {
-
-		byte[] reportContent = null;
-		try {
-			JasperReport jasperReport;
-
-			File file = ResourceUtils.getFile("classpath:invoice_template.jrxml");
-			jasperReport = JasperCompileManager.compileReport(file.getAbsolutePath());
-
-			reportContent = printJasper(jasperReport, items);
-
-		} catch (FileNotFoundException | JRException e) {
-			e.printStackTrace();
-		}
-
-		return reportContent;
-	}
-
-	public byte[] printJasper(JasperReport jasperReport, InvoiceDto invoice) {
+	public byte[] printJasper(JasperReport jasperReport, Invoice invoice, List<InvoiceItem> itemList) {
 		byte[] reportContent = null;
 		JasperPrint jasperPrint = null;
 
@@ -138,7 +160,7 @@ public class InvoiceService {
 			parameters.put("invoiceDate", convertToDate(invoice.getInvoiceDate()));
 			parameters.put("totalAmount", invoice.getTotalAmount());
 			parameters.put("depositAmount", invoice.getDepositAmount());
-			parameters.put("invoiceItems", invoice.getItemsList());
+			parameters.put("invoiceItems", itemList);
 			parameters.put("logo", imageResource.getFile());
 
 			jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, new JREmptyDataSource(1));
@@ -151,12 +173,59 @@ public class InvoiceService {
 		return reportContent;
 	}
 
-	public String getFileName(InvoiceDto invoice) {
-		return "Invoice_".concat(invoice.getInvoiceNumber().concat(".").concat(INVOICE_FILE_TYPE));
+	public String getFileName(String invoiceNumber) {
+		return "Invoice_".concat(invoiceNumber.concat(".").concat(INVOICE_FILE_TYPE));
 	}
 
 	private Date convertToDate(LocalDate invoiceDate) {
 		Date convertedDate = Date.from(invoiceDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
 		return convertedDate;
+	}
+
+	public InvoiceDto findInvoiceByNumber(String invoiceNumber) {
+		Optional<Invoice> invoice = invoiceRepo.findByInvoiceNumber(invoiceNumber);
+		if (invoice.isPresent()) {
+			InvoiceDto invoiceDto = convertToInvoiceDto(invoice.get());
+			List<InvoiceItem> invoiceItemList = invoiceItemRepo.findByInvoiceNumber(invoiceNumber);
+			invoiceDto.setItemsList(convertToInvoiceItemDtoList(invoiceItemList));
+			return invoiceDto;
+		}
+
+		return null;
+	}
+
+	public Boolean deleteInvoice(String invoiceNumber) {
+		Optional<Invoice> invoice = invoiceRepo.findByInvoiceNumber(invoiceNumber);
+		if (invoice.isPresent()) {
+			invoiceItemRepo.deleteByInvoiceNumber(invoiceNumber);
+			invoiceRepo.delete(invoice.get());
+			return true;
+		}
+
+		return false;
+	}
+
+	public byte[] getPrintedInvoiceReport(String invoiceNumber) {
+		byte[] reportContent = null;
+		try {
+			Optional<Invoice> invoice = invoiceRepo.findByInvoiceNumber(invoiceNumber);
+			if (!invoice.isPresent()) {
+				return reportContent;
+			}
+
+			List<InvoiceItem> invoiceItemList = invoiceItemRepo.findByInvoiceNumber(invoiceNumber);
+
+			JasperReport jasperReport;
+
+			File file = ResourceUtils.getFile("classpath:invoice_template.jrxml");
+			jasperReport = JasperCompileManager.compileReport(file.getAbsolutePath());
+
+			reportContent = printJasper(jasperReport, invoice.get(), invoiceItemList);
+
+		} catch (FileNotFoundException | JRException e) {
+			e.printStackTrace();
+		}
+
+		return reportContent;
 	}
 }

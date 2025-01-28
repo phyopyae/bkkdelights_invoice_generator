@@ -36,7 +36,14 @@
 						class="btn btn-primary">View Details</a>
 
 						<button class="btn btn-success" onclick="window.print()">Print</button>
-
+						
+						<form
+							th:action="@{/invoice/print/{invoiceNumber}(invoiceNumber=${invoice.invoiceNumber})}"
+							method="post" style="display: inline-block;">
+							<button type="submit" class="btn btn-danger"
+								onclick="return confirm('Are you sure you want to print this invoice?')">Print</button>
+						</form>
+						
 						<form
 							th:action="@{/invoice/delete/{invoiceNumber}(invoiceNumber=${invoice.invoiceNumber})}"
 							method="post" style="display: inline-block;">
