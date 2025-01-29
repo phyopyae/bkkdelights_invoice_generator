@@ -2,12 +2,11 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>New Invoice</title>
-<link rel="stylesheet"
-	href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>New Invoice</title>
+	<link rel="stylesheet" href="/css/bootstrap.min.css">
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 
 <body>
@@ -15,7 +14,7 @@
 		<!-- Header with logo and title -->
 		<header class="text-center mb-4">
 			<img th:width="100" th:src="@{/images/logo.jpg}" alt="Logo" />
-			<h1>Invoice Generator</h1>
+			<h1>Add New Invoice</h1>
 		</header>
 
 		<!-- Main content -->
@@ -108,7 +107,8 @@
 					<!-- Buttons for saving and printing -->
 					<div class="form-row justify-content-between">
 						<button type="submit" name="save" class="btn btn-primary">Save</button>
-						<button type="submit" name="print" class="btn btn-secondary" onclick="return confirm('Are you sure you want to print this invoice?')">Print</button>
+						<button type="submit" name="print" class="btn btn-secondary"
+							onclick="return confirm('Are you sure you want to print this invoice?')">Print</button>
 					</div>
 				</form>
 			</div>
@@ -120,9 +120,7 @@
 		</footer>
 	</div>
 
-	<!-- Link to Bootstrap JS and jQuery -->
-	<script
-		src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+	<script src="/js/bootstrap.min.js"></script>
 	<script src="/js/script.js"></script>
 </body>
 
