@@ -1,6 +1,8 @@
 // Function to calculate amount for each item and total amount
 function calculateAmount() {
 	let totalAmount = 0; // Variable to store the sum of all amounts
+	let depositAmountInput = document.getElementById("depositAmount");
+	let depositAmount = parseFloat(depositAmountInput.value);
 
 	// Get all rows of items with the class 'item-row'
 	let rows = document.querySelectorAll(".item-row");  // Select all item rows
@@ -29,6 +31,10 @@ function calculateAmount() {
 		// Add to the total amount
 		totalAmount += amount;
 	});
+	
+	if (depositAmount > 0 && totalAmount > 0) {
+		totalAmount -= depositAmount;
+	}
 
 	// Update the total amount field
 	document.getElementById("totalAmount").value = totalAmount.toFixed(2); // Display total with two decimal places
