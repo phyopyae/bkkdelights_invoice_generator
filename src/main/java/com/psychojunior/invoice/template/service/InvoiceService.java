@@ -1,24 +1,13 @@
 package com.psychojunior.invoice.template.service;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
-import org.springframework.util.ResourceUtils;
 
 import com.psychojunior.invoice.template.entity.Invoice;
 import com.psychojunior.invoice.template.entity.InvoiceItem;
@@ -26,14 +15,6 @@ import com.psychojunior.invoice.template.model.InvoiceDto;
 import com.psychojunior.invoice.template.model.InvoiceItemDto;
 import com.psychojunior.invoice.template.repository.InvoiceItemRepository;
 import com.psychojunior.invoice.template.repository.InvoiceRepository;
-
-import net.sf.jasperreports.engine.JREmptyDataSource;
-import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.JasperCompileManager;
-import net.sf.jasperreports.engine.JasperExportManager;
-import net.sf.jasperreports.engine.JasperFillManager;
-import net.sf.jasperreports.engine.JasperPrint;
-import net.sf.jasperreports.engine.JasperReport;
 
 @Service
 public class InvoiceService {
@@ -43,9 +24,6 @@ public class InvoiceService {
 
 	@Value("${invoice.filetype}")
 	private String INVOICE_FILE_TYPE;
-
-	@Autowired
-	private ResourceLoader resourceLoader;
 
 	@Autowired
 	private InvoiceRepository invoiceRepo;
@@ -144,42 +122,8 @@ public class InvoiceService {
 		invoiceItemRepo.saveAll(invoiceItemList);
 	}
 
-	public byte[] printJasper(JasperReport jasperReport, Invoice invoice, List<InvoiceItem> itemList) {
-		byte[] reportContent = null;
-		JasperPrint jasperPrint = null;
-
-		try {
-			Resource imageResource = resourceLoader.getResource("classpath:/static/images/logo.jpg");
-
-			Map<String, Object> parameters = new HashMap<>();
-			parameters.put("title", "Invoice");
-			parameters.put("customerName", invoice.getCustomerName());
-			parameters.put("customerContact", invoice.getContactNumber());
-			parameters.put("customerAddress", invoice.getCustomerAddress());
-			parameters.put("invoiceNumber", invoice.getInvoiceNumber());
-			parameters.put("invoiceDate", convertToDate(invoice.getInvoiceDate()));
-			parameters.put("totalAmount", invoice.getTotalAmount());
-			parameters.put("depositAmount", invoice.getDepositAmount());
-			parameters.put("invoiceItems", itemList);
-			parameters.put("logo", imageResource.getFile());
-
-			jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, new JREmptyDataSource(1));
-			reportContent = JasperExportManager.exportReportToPdf(jasperPrint);
-		} catch (JRException e) {
-			e.printStackTrace();
-		} catch (IOException ioEx) {
-			ioEx.printStackTrace();
-		}
-		return reportContent;
-	}
-
 	public String getFileName(String invoiceNumber) {
 		return "Invoice_".concat(invoiceNumber.concat(".").concat(INVOICE_FILE_TYPE));
-	}
-
-	private Date convertToDate(LocalDate invoiceDate) {
-		Date convertedDate = Date.from(invoiceDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
-		return convertedDate;
 	}
 
 	public InvoiceDto findInvoiceByNumber(String invoiceNumber) {
@@ -205,27 +149,17 @@ public class InvoiceService {
 		return false;
 	}
 
-	public byte[] getPrintedInvoiceReport(String invoiceNumber) {
-		byte[] reportContent = null;
-		try {
-			Optional<Invoice> invoice = invoiceRepo.findByInvoiceNumber(invoiceNumber);
-			if (!invoice.isPresent()) {
-				return reportContent;
-			}
-
-			List<InvoiceItem> invoiceItemList = invoiceItemRepo.findByInvoiceNumber(invoiceNumber);
-
-			JasperReport jasperReport;
-
-			File file = ResourceUtils.getFile("classpath:invoice_template.jrxml");
-			jasperReport = JasperCompileManager.compileReport(file.getAbsolutePath());
-
-			reportContent = printJasper(jasperReport, invoice.get(), invoiceItemList);
-
-		} catch (FileNotFoundException | JRException e) {
-			e.printStackTrace();
+	public Invoice getInvoiceByInvoiceNumber(String invoiceNumber) {
+		Optional<Invoice> invoice = invoiceRepo.findByInvoiceNumber(invoiceNumber);
+		if (!invoice.isPresent()) {
+			return invoice.get();
 		}
 
-		return reportContent;
+		return null;
 	}
+
+	public List<InvoiceItem> getInvoiceItemByInvoiceNumber(String invoiceNumber) {
+		return invoiceItemRepo.findByInvoiceNumber(invoiceNumber);
+	}
+
 }

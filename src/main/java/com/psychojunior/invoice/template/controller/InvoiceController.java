@@ -15,15 +15,22 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.psychojunior.invoice.template.entity.Invoice;
+import com.psychojunior.invoice.template.entity.InvoiceItem;
 import com.psychojunior.invoice.template.model.InvoiceDto;
 import com.psychojunior.invoice.template.service.InvoiceService;
+import com.psychojunior.invoice.template.service.PrintService;
 
 @Controller
 public class InvoiceController {
 
 	@Autowired
 	InvoiceService invoiceService;
+	
+	@Autowired
+	PrintService printService;
 
 	@GetMapping("/")
 	private String getHomepage() {
@@ -51,7 +58,7 @@ public class InvoiceController {
 		if (invoice != null) {
 			model.addAttribute("invoice", invoice);
 		} else {
-			model.addAttribute("message", "Invoice not found."); // TODO to show message on screen
+			model.addAttribute("message", "Invoice not found.");
 		}
 
 		return "invoice_detail";
@@ -65,8 +72,9 @@ public class InvoiceController {
 	}
 
 	@PostMapping(value = "/invoice/add", params = "save")
-	public String addInvoice(@ModelAttribute InvoiceDto invoiceDto) {
+	public String addInvoice(@ModelAttribute InvoiceDto invoiceDto, RedirectAttributes redirectAttributes) {
 		invoiceService.save(invoiceDto);
+		redirectAttributes.addFlashAttribute("message", "Invoice Added.");
 		return "redirect:/invoices";
 	}
 
@@ -78,10 +86,17 @@ public class InvoiceController {
 
 	@PostMapping("/invoice/print/{invoiceNumber}")
 	public ResponseEntity<ByteArrayResource> printInvoice(@PathVariable String invoiceNumber, Model model) {
-		byte[] report = invoiceService.getPrintedInvoiceReport(invoiceNumber);
-
+		
+		Invoice invoice = invoiceService.getInvoiceByInvoiceNumber(invoiceNumber);
+		List<InvoiceItem> invoiceItemList = invoiceService.getInvoiceItemByInvoiceNumber(invoiceNumber);
+		
+		if (null == invoice && invoiceItemList.isEmpty()) {
+			return ResponseEntity.notFound().build();
+		}
+		
+		byte[] report = printService.getPrintedInvoiceReport(invoice, invoiceItemList);
 		String fileName = invoiceService.getFileName(invoiceNumber);
-
+		
 		ByteArrayResource resource = new ByteArrayResource(report);
 		return ResponseEntity.ok().contentType(MediaType.APPLICATION_OCTET_STREAM)
 				.contentLength(resource.contentLength()).header(HttpHeaders.CONTENT_DISPOSITION,
@@ -91,12 +106,12 @@ public class InvoiceController {
 
 	@Transactional
 	@PostMapping("/invoice/delete/{invoiceNumber}")
-	public String deleteInvoice(@PathVariable String invoiceNumber, Model model) {
+	public String deleteInvoice(@PathVariable String invoiceNumber, RedirectAttributes redirectAttributes) {
 		Boolean invoice = invoiceService.deleteInvoice(invoiceNumber);
 		if (!invoice) {
-			model.addAttribute("message", "Invoice not found.");
+			redirectAttributes.addFlashAttribute("message", "Invoice not found.");
 		} else {
-			model.addAttribute("message", "Invoice deleted.");
+			redirectAttributes.addFlashAttribute("message", "Invoice deleted.");
 		}
 		return "redirect:/invoices";
 	}
