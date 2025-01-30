@@ -28,7 +28,7 @@ public class InvoiceController {
 
 	@Autowired
 	InvoiceService invoiceService;
-	
+
 	@Autowired
 	PrintService printService;
 
@@ -86,17 +86,17 @@ public class InvoiceController {
 
 	@PostMapping("/invoice/print/{invoiceNumber}")
 	public ResponseEntity<ByteArrayResource> printInvoice(@PathVariable String invoiceNumber, Model model) {
-		
+
 		Invoice invoice = invoiceService.getInvoiceByInvoiceNumber(invoiceNumber);
 		List<InvoiceItem> invoiceItemList = invoiceService.getInvoiceItemByInvoiceNumber(invoiceNumber);
-		
+
 		if (null == invoice && invoiceItemList.isEmpty()) {
 			return ResponseEntity.notFound().build();
 		}
-		
+
 		byte[] report = printService.getPrintedInvoiceReport(invoice, invoiceItemList);
 		String fileName = invoiceService.getFileName(invoiceNumber);
-		
+
 		ByteArrayResource resource = new ByteArrayResource(report);
 		return ResponseEntity.ok().contentType(MediaType.APPLICATION_OCTET_STREAM)
 				.contentLength(resource.contentLength()).header(HttpHeaders.CONTENT_DISPOSITION,
@@ -122,5 +122,34 @@ public class InvoiceController {
 		model.addAttribute("invoice", invoiceDto);
 		model.addAttribute("isSave", true);
 		return "index";
+	}
+
+	@GetMapping("/invoice/edit/{invoiceNumber}")
+	public String editInvoice(@PathVariable String invoiceNumber, Model model) {
+
+		InvoiceDto invoice = invoiceService.findInvoiceByNumber(invoiceNumber);
+
+		if (invoice != null) {
+			model.addAttribute("invoice", invoice);
+			return "invoice_edit"; // Return the edit view
+		} else {
+			model.addAttribute("message", "Invoice not found.");
+			return "redirect:/invoices"; // Redirect to the invoices list if not found
+		}
+	}
+
+	@Transactional
+	@PostMapping("/invoice/edit/{invoiceNumber}")
+	public String updateInvoice(@PathVariable String invoiceNumber, @ModelAttribute InvoiceDto updatedInvoice,
+			RedirectAttributes redirectAttributes) {
+		boolean isUpdated = invoiceService.update(invoiceNumber, updatedInvoice);
+
+		if (isUpdated) {
+			redirectAttributes.addFlashAttribute("message", "Invoice updated successfully.");
+			return "redirect:/invoice/" + invoiceNumber; // Redirect to the updated invoice's details page
+		} else {
+			redirectAttributes.addFlashAttribute("message", "Failed to update invoice.");
+			return "redirect:/invoice/edit/" + invoiceNumber; // Stay on the edit page if update fails
+		}
 	}
 }

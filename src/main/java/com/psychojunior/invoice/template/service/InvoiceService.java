@@ -105,7 +105,7 @@ public class InvoiceService {
 		List<InvoiceItem> invoiceItemList = new ArrayList<InvoiceItem>();
 		for (InvoiceItemDto itemDto : itemDtoList) {
 
-			if (itemDto.getItemNumber().isBlank()) {
+			if (null == itemDto.getItemNumber() || itemDto.getItemNumber().isBlank()) {
 				continue;
 			}
 
@@ -160,6 +160,38 @@ public class InvoiceService {
 
 	public List<InvoiceItem> getInvoiceItemByInvoiceNumber(String invoiceNumber) {
 		return invoiceItemRepo.findByInvoiceNumber(invoiceNumber);
+	}
+
+	public boolean update(String invoiceNumber, InvoiceDto updatedInvoice) {
+		boolean isUpdatedInvoice = updateInvoice(invoiceNumber, updatedInvoice);
+		if (isUpdatedInvoice) {
+			updateInvoiceItem(invoiceNumber, updatedInvoice.getItemsList());
+			return true;
+		}
+		return false;
+	}
+
+	public boolean updateInvoice(String invoiceNumber, InvoiceDto updatedInvoice) {
+		Optional<Invoice> existingInvoice = invoiceRepo.findByInvoiceNumber(invoiceNumber);
+
+		if (existingInvoice.isPresent()) {
+			Invoice invoice = existingInvoice.get();
+			invoice.setInvoiceDate(updatedInvoice.getInvoiceDate());
+			invoice.setCustomerName(updatedInvoice.getCustomerName());
+			invoice.setCustomerAddress(updatedInvoice.getCustomerAddress());
+			invoice.setContactNumber(updatedInvoice.getContactNumber());
+			invoice.setDepositAmount(updatedInvoice.getDepositAmount());
+			invoice.setTotalAmount(updatedInvoice.getTotalAmount());
+			invoiceRepo.save(invoice); // Save the updated invoice
+			return true;
+		}
+		return false;
+	}
+
+	public void updateInvoiceItem(String invoiceNumber, List<InvoiceItemDto> itemDtoList) {
+
+		invoiceItemRepo.deleteByInvoiceNumber(invoiceNumber);
+		saveInvoiceItem(invoiceNumber, itemDtoList);
 	}
 
 }
