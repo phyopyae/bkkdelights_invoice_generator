@@ -55,6 +55,33 @@ function formatDate(dateStr) {
 	}
 }
 
+function addNewItem() {
+
+	let tableBody = document.querySelector("table tbody");
+	let newRow = document.createElement("tr");
+	
+	newRow.classList.add("item-row");
+	newRow.innerHTML = `
+			<td><input type="text" class="form-control-sm" id="itemsList${tableBody.children.length}.itemNumber" name="itemsList[${tableBody.children.length}].itemNumber" placeholder="Item#" required></td>
+			<td><input type="text" class="form-control-sm" id="itemsList${tableBody.children.length}.itemDescription" name="itemsList[${tableBody.children.length}].itemDescription" placeholder="Description" required></td>
+			<td><input type="number" class="form-control-sm" id="itemsList${tableBody.children.length}.itemCount" name="itemsList[${tableBody.children.length}].itemCount" placeholder="Quantity" oninput="calculateAmount()" required></td>
+			<td><input type="number" class="form-control-sm" id="itemsList${tableBody.children.length}.itemPrice" name="itemsList[${tableBody.children.length}].itemPrice" placeholder="Unit Price" oninput="calculateAmount()" required></td>
+			<td><input type="number" class="form-control-sm" id="itemsList${tableBody.children.length}.itemTotalAmt" name="itemsList[${tableBody.children.length}].itemTotalAmt" placeholder="Amount" readonly></td>
+			<td><button type="button" class="btn btn-danger btn-sm" onclick="removeItem(this)">Remove</button></td>
+		`;
+
+	tableBody.appendChild(newRow);
+	calculateAmount();
+}
+
+function removeItem(button) {
+	
+	let row = button.closest("tr");
+
+	row.remove();
+	calculateAmount();
+}
+
 document.addEventListener("DOMContentLoaded", function() {
 	// Add event listeners for item count and price inputs
 	let quantityInputs = document.querySelectorAll("input[id$='itemCount']");
