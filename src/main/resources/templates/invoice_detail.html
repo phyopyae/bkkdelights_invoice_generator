@@ -1,53 +1,79 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Invoice Details</title>
-    <link rel="stylesheet" href="/css/bootstrap.min.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Invoice Details</title>
+<link rel="stylesheet" href="/css/bootstrap.min.css">
 </head>
 <body>
-    <div class="container mt-5">
-        <h1 class="text-center">Invoice Details</h1>
+	<div class="container mt-5">
+		<h1 class="text-center">Invoice Details</h1>
 
-        <div class="row">
-            <div class="col-md-6">
-                <h4>Invoice Information</h4>
-                <p><strong>Invoice Number:</strong> <span th:text="${invoice.invoiceNumber}"></span></p>
-                <p><strong>Invoice Date:</strong> <span th:text="${invoice.invoiceDate}"></span></p>
-                <p><strong>Customer Name:</strong> <span th:text="${invoice.customerName}"></span></p>
-                <p><strong>Customer Address:</strong> <span th:text="${invoice.customerAddress}"></span></p>
-                <p><strong>Contact Number:</strong> <span th:text="${invoice.contactNumber}"></span></p>
-            </div>
+		<div th:if="${message}" class="alert alert-info text-center"
+			role="alert" th:text="${message}"></div>
 
-            <div class="col-md-6">
-                <h4>Amount Details</h4>
-                <p><strong>Deposit Amount:</strong> <span th:text="${invoice.depositAmount}"></span> MMK</p>
-                <p><strong>Total Amount:</strong> <span th:text="${invoice.totalAmount}"></span> MMK</p>
-            </div>
-        </div>
+		<div class="row">
+			<div class="col-md-6">
+				<h4>Invoice Information</h4>
+				<p>
+					<strong>Invoice Number:</strong> <span
+						th:text="${invoice.invoiceNumber}"></span>
+				</p>
+				<p>
+					<strong>Invoice Date:</strong> <span
+						th:text="${invoice.invoiceDate}"></span>
+				</p>
+				<p>
+					<strong>Customer Name:</strong> <span
+						th:text="${invoice.customerName}"></span>
+				</p>
+				<p>
+					<strong>Customer Address:</strong> <span
+						th:text="${invoice.customerAddress}"></span>
+				</p>
+				<p>
+					<strong>Contact Number:</strong> <span
+						th:text="${invoice.contactNumber}"></span>
+				</p>
+			</div>
 
-        <h4 class="mt-4">Invoice Items</h4>
-        <table class="table table-bordered">
-            <thead>
-                <tr>
-                    <th>Description</th>
-                    <th>Price</th>
-                    <th>Count</th>
-                    <th>Total Amount</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr th:each="item : ${invoice.itemsList}">
-                    <td th:text="${item.itemDescription}"></td>
-                    <td th:text="${item.itemPrice}"></td>
-                    <td th:text="${item.itemCount}"></td>
-                    <td th:text="${item.itemTotalAmt}"></td>
-                </tr>
-            </tbody>
-        </table>
-        <a href="/invoices" class="btn btn-secondary mt-3">Back to Invoices List</a>
-        <button class="btn btn-success mt-3" onclick="window.print()">Print</button>
-    </div>
+			<div class="col-md-6">
+				<h4>Amount Details</h4>
+				<p>
+					<strong>Deposit Amount:</strong> <span
+						th:text="${invoice.depositAmount}"></span> MMK
+				</p>
+				<p>
+					<strong>Total Amount:</strong> <span
+						th:text="${invoice.totalAmount}"></span> MMK
+				</p>
+			</div>
+		</div>
+
+		<h4 class="mt-4">Invoice Items</h4>
+		<table class="table table-bordered">
+			<thead>
+				<tr>
+					<th>Description</th>
+					<th>Price</th>
+					<th>Count</th>
+					<th>Total Amount</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:each="item : ${invoice.itemsList}">
+					<td th:text="${item.itemDescription}"></td>
+					<td th:text="${item.itemPrice}"></td>
+					<td th:text="${item.itemCount}"></td>
+					<td th:text="${item.itemTotalAmt}"></td>
+				</tr>
+			</tbody>
+		</table>
+		<a href="/invoices" class="btn btn-secondary mt-3">Back to
+			Invoices List</a>
+		 <a th:href="@{/invoice/edit/{invoiceNumber}(invoiceNumber=${invoice.invoiceNumber})}" class="btn btn-primary mt-3">Edit Invoice</a>
+		<button class="btn btn-success mt-3" onclick="window.print()">Print</button>
+	</div>
 </body>
 </html>
