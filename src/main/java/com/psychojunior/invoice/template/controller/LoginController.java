@@ -22,24 +22,15 @@ public class LoginController {
 	}
 
 	@PostMapping("/login")
-	public String login(@RequestParam("username") String username, @RequestParam("password") String password) {
+	public String login(@RequestParam String username, @RequestParam String password) {
 
-		// Create the authentication token from the username and password
 		UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(username, password);
-
-		// Authenticate the user using the AuthenticationManager
 		try {
 			Authentication authentication = authenticationManager.authenticate(token);
-
-			// If authentication is successful, set the authentication in the
-			// SecurityContext
 			SecurityContextHolder.getContext().setAuthentication(authentication);
-
-			// Redirect the user to the home page or any page after successful login
-			return "redirect:/"; // Change to your preferred page
+			return "redirect:/";
 		} catch (Exception e) {
-			// If authentication fails, show an error message
-			return "redirect:/login?error=true"; // Redirect back to login page with error message
+			return "redirect:/login?error=true";
 		}
 	}
 }
