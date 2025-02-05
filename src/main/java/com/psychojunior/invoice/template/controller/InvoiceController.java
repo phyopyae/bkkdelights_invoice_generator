@@ -2,7 +2,6 @@ package com.psychojunior.invoice.template.controller;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpHeaders;
@@ -26,11 +25,13 @@ import com.psychojunior.invoice.template.service.PrintService;
 @Controller
 public class InvoiceController {
 
-	@Autowired
-	InvoiceService invoiceService;
+	private final InvoiceService invoiceService;
+	private final PrintService printService;
 
-	@Autowired
-	PrintService printService;
+	public InvoiceController(InvoiceService invoiceService, PrintService printService) {
+		this.invoiceService = invoiceService;
+		this.printService = printService;
+	}
 
 	@GetMapping("/")
 	private String getHomepage() {

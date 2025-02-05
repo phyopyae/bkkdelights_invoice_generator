@@ -10,7 +10,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
@@ -30,8 +29,11 @@ import net.sf.jasperreports.engine.JasperReport;
 @Service
 public class PrintService {
 
-	@Autowired
-	private ResourceLoader resourceLoader;
+	private final ResourceLoader resourceLoader;
+
+	public PrintService(ResourceLoader resourceLoader) {
+		this.resourceLoader = resourceLoader;
+	}
 
 	public byte[] getPrintedInvoiceReport(Invoice invoice, List<InvoiceItem> invoiceItemList) {
 		

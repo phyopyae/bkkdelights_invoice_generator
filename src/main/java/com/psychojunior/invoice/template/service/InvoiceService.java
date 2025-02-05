@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -25,11 +24,13 @@ public class InvoiceService {
 	@Value("${invoice.filetype}")
 	private String INVOICE_FILE_TYPE;
 
-	@Autowired
-	private InvoiceRepository invoiceRepo;
+	private final InvoiceRepository invoiceRepo;
+	private final InvoiceItemRepository invoiceItemRepo;
 
-	@Autowired
-	private InvoiceItemRepository invoiceItemRepo;
+	public InvoiceService(InvoiceRepository invoiceRepo, InvoiceItemRepository invoiceItemRepo) {
+		this.invoiceRepo = invoiceRepo;
+		this.invoiceItemRepo = invoiceItemRepo;
+	}
 
 	public InvoiceDto getInitialInvoice() {
 		InvoiceDto invoice = new InvoiceDto();
