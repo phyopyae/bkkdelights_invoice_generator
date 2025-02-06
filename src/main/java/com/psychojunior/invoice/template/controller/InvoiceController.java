@@ -67,7 +67,7 @@ public class InvoiceController {
 
 	@GetMapping("/invoice/add")
 	public String showAddInvoiceForm(Model model) {
-		InvoiceDto invoice = invoiceService.getInitialInvoice();
+		InvoiceDto invoice = new InvoiceDto();
 		model.addAttribute("invoice", invoice);
 		return "invoice_add";
 	}

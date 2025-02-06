@@ -72,7 +72,20 @@
 					</div>
 
 					<!-- Invoice Items Table -->
-					<h4 class="mt-4">Invoice Items</h4>
+					<div class="form-row align-items-center">
+						<div class="col-auto">
+							<h4 class="mt-4 mb-3">Invoice Items</h4>
+						</div>
+						<div class="col-auto ml-auto">
+							<button type="button" class="btn btn-success mt-3"
+								onclick="addNewItem()">
+								<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-square-fill" viewBox="0 0 16 16">
+									<path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2zm6.5 4.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3a.5.5 0 0 1 1 0"></path>
+								</svg>
+								Add Invoice Item
+							</button>
+						</div>
+					</div>
 					<table class="table table-bordered">
 						<thead class="thead-light">
 							<tr>
@@ -108,9 +121,9 @@
 					</table>
 
 					<div class="form-row justify-content-between">
-						<button type="button" class="btn btn-success"
-							onclick="addNewItem()">Add New Item</button>
-						<button type="submit" name="save" class="btn btn-primary">Edit</button>
+						<a href="/invoices" class="btn btn-secondary mt-3">Back to
+						Invoices List</a>
+						<button type="submit" name="save" class="btn btn-primary mt-3">Edit</button>
 					</div>
 				</form>
 			</div>
