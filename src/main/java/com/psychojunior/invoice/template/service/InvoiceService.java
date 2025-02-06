@@ -23,6 +23,9 @@ public class InvoiceService {
 
 	@Value("${invoice.filetype}")
 	private String INVOICE_FILE_TYPE;
+	
+	@Value("${invoice.filetype.excel}")
+	private String INVOICE_FILE_TYPE_EXCEL;
 
 	private final InvoiceRepository invoiceRepo;
 	private final InvoiceItemRepository invoiceItemRepo;
@@ -152,7 +155,7 @@ public class InvoiceService {
 
 	public Invoice getInvoiceByInvoiceNumber(String invoiceNumber) {
 		Optional<Invoice> invoice = invoiceRepo.findByInvoiceNumber(invoiceNumber);
-		if (!invoice.isPresent()) {
+		if (invoice.isPresent()) {
 			return invoice.get();
 		}
 
@@ -193,6 +196,10 @@ public class InvoiceService {
 
 		invoiceItemRepo.deleteByInvoiceNumber(invoiceNumber);
 		saveInvoiceItem(invoiceNumber, itemDtoList);
+	}
+
+	public String getExcelFileName(String invoiceNumber) {
+		return "Invoice_".concat(invoiceNumber.concat(".").concat(INVOICE_FILE_TYPE_EXCEL));
 	}
 
 }
