@@ -7,9 +7,10 @@
 	<link rel="stylesheet" href="/css/bootstrap.min.css">
 </head>
 <body>
+	<header class="bg-dark text-white d-flex align-items-center py-3 px-4 mb-4 rounded">
+    	<h4 class="mb-0">Invoices</h4>
+	</header>
 	<div class="container mt-5">
-		<h1 class="text-center">Invoices</h1>
-
 		<div th:if="${message}" class="alert alert-info text-center"
 			role="alert" th:text="${message}"></div>
 
@@ -28,6 +29,9 @@
 				</tr>
 			</thead>
 			<tbody>
+				<tr th:if="${#lists.isEmpty(invoices)}">
+					<td colspan="5" class="text-center">No invoices found.</td>
+				</tr>
 				<tr th:each="invoice : ${invoices}">
 					<td th:text="${invoice.invoiceNumber}"></td>
 					<td th:text="${invoice.invoiceDate}"></td>
@@ -54,5 +58,9 @@
 			</tbody>
 		</table>
 	</div>
+	<!-- Footer -->
+	<footer class="bg-light text-dark text-center mt-5 py-3 border-top">
+		<p>&copy; 2026 Techbook Myanmar. All rights reserved.</p>
+	</footer>
 </body>
 </html>
