@@ -18,9 +18,6 @@ import com.psychojunior.invoice.template.repository.InvoiceRepository;
 @Service
 public class InvoiceService {
 
-	@Value("${invoice.itemcount}")
-	private Integer INITIAL_INVOICE_ITEM_COUNT;
-
 	@Value("${invoice.filetype}")
 	private String INVOICE_FILE_TYPE;
 	
@@ -33,16 +30,6 @@ public class InvoiceService {
 	public InvoiceService(InvoiceRepository invoiceRepo, InvoiceItemRepository invoiceItemRepo) {
 		this.invoiceRepo = invoiceRepo;
 		this.invoiceItemRepo = invoiceItemRepo;
-	}
-
-	public InvoiceDto getInitialInvoice() {
-		InvoiceDto invoice = new InvoiceDto();
-
-		for (int i = 0; i < INITIAL_INVOICE_ITEM_COUNT; i++) {
-			invoice.getItemsList().add(new InvoiceItemDto());
-		}
-
-		return invoice;
 	}
 
 	public List<InvoiceDto> getAllInvoiceList() {

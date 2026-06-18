@@ -38,13 +38,6 @@ public class InvoiceController {
 		return "redirect:/invoices";
 	}
 
-	@GetMapping("/test")
-	private String getTestPage(Model model) {
-		InvoiceDto invoice = invoiceService.getInitialInvoice();
-		model.addAttribute("invoice", invoice);
-		return "index";
-	}
-
 	@GetMapping("/invoices")
 	public String getInvoiceList(Model model) {
 		List<InvoiceDto> invoiceList = invoiceService.getAllInvoiceList();
