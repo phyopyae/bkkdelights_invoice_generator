@@ -3,45 +3,39 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Invoice Details</title>
+<title>Edit Invoice</title>
 <link rel="stylesheet" href="/css/bootstrap.min.css">
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
+	<!-- Header title -->
+	<header class="bg-dark text-white d-flex align-items-center py-3 px-4 mb-4 rounded">
+    	<h4 class="mb-0">Edit Invoice</h4>
+	</header>
 	<div class="container mt-4">
-		<!-- Header with logo and title -->
-		<header class="text-center mb-4">
-			<img th:width="100" th:src="@{/images/logo.jpg}" alt="Logo" />
-			<h1>Edit Invoice</h1>
-		</header>
-
 		<!-- Main content -->
 		<section class="content">
 			<div class="mt-5">
-				<h2>Invoice Form</h2>
 				<form
 					th:action="@{/invoice/edit/{invoiceNumber}(invoiceNumber=${invoice.invoiceNumber})}"
 					th:object="${invoice}" method="post">
 					<div class="form-row">
-						<div class="form-group col-md-6">
+						<div class="form-group col-md-3">
 							<label for="invoiceNumber">Invoice Number</label> <input
 								type="text" class="form-control" id="invoiceNumber"
 								th:field="*{invoiceNumber}" placeholder="Invoice Number"
 								readonly>
 						</div>
-						<div class="form-group col-md-6">
+						<div class="form-group col-md-3">
 							<label for="invoiceDate">Invoice Date</label> <input type="date"
 								class="form-control" id="invoiceDate" th:field="*{invoiceDate}">
 						</div>
-					</div>
-
-					<div class="form-row">
-						<div class="form-group col-md-6">
+						<div class="form-group col-md-3">
 							<label for="customerName">Customer Name</label> <input
 								type="text" class="form-control" id="customerName"
 								th:field="*{customerName}" placeholder="Customer Name">
 						</div>
-						<div class="form-group col-md-6">
+						<div class="form-group col-md-3">
 							<label for="contactNumber">Contact Number</label> <input
 								type="text" class="form-control" id="contactNumber"
 								th:field="*{contactNumber}" placeholder="Contact Number">
@@ -49,21 +43,18 @@
 					</div>
 
 					<div class="form-row">
-						<div class="form-group col-md-12">
+						<div class="form-group col-md-6">
 							<label for="customerAddress">Customer Address</label>
-							<textarea class="form-control" rows="4"
+							<textarea class="form-control" rows="1"
 								th:field="*{customerAddress}" placeholder="Customer Address"></textarea>
 						</div>
-					</div>
-
-					<div class="form-row">
-						<div class="form-group col-md-6">
+						<div class="form-group col-md-3">
 							<label for="depositAmount">Deposit Amount</label> <input
 								type="number" class="form-control" id="depositAmount"
 								th:field="*{depositAmount}" step="0.01"
 								placeholder="Deposit Amount" oninput="calculateAmount()">
 						</div>
-						<div class="form-group col-md-6">
+						<div class="form-group col-md-3">
 							<label for="totalAmount">Total Amount</label> <input
 								type="number" class="form-control" id="totalAmount"
 								th:field="*{totalAmount}" step="0.01" placeholder="Total Amount"
@@ -128,13 +119,11 @@
 				</form>
 			</div>
 		</section>
-
-		<!-- Footer -->
-		<footer class="text-center mt-5">
-			<p>&copy; 2025 Techbook Myanmar. All rights reserved.</p>
-		</footer>
 	</div>
-
+	<!-- Footer -->
+	<footer class="bg-light text-dark text-center mt-5 py-3 border-top">
+		<p>&copy; 2026 Techbook Myanmar. All rights reserved.</p>
+	</footer>
 	<script src="/js/bootstrap.min.js"></script>
 	<script src="/js/script.js"></script>
 </body>
