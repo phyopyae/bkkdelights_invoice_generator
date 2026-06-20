@@ -20,7 +20,7 @@ public class InvoiceService {
 
 	@Value("${invoice.filetype}")
 	private String INVOICE_FILE_TYPE;
-	
+
 	@Value("${invoice.filetype.excel}")
 	private String INVOICE_FILE_TYPE_EXCEL;
 
@@ -187,6 +187,15 @@ public class InvoiceService {
 
 	public String getExcelFileName(String invoiceNumber) {
 		return "Invoice_".concat(invoiceNumber.concat(".").concat(INVOICE_FILE_TYPE_EXCEL));
+	}
+
+	public List<InvoiceDto> searchInvoices(String invoiceNumber, String customerName) {
+
+		String invNo = invoiceNumber == null ? "" : invoiceNumber;
+		String custName = customerName == null ? "" : customerName;
+
+		return invoiceRepo.findByInvoiceNumberContainingIgnoreCaseAndCustomerNameContainingIgnoreCase(invNo, custName)
+				.stream().map(this::convertToInvoiceDto).toList();
 	}
 
 }

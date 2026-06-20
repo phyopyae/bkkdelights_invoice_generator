@@ -1,5 +1,6 @@
 package com.psychojunior.invoice.template.repository;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -12,4 +13,8 @@ public interface InvoiceRepository extends JpaRepository<Invoice, Long>  {
 	Invoice save(Invoice invoice);
 	
 	Optional<Invoice> findByInvoiceNumber(String invoiceNumber);
+	
+    List<Invoice> findByInvoiceNumberContainingIgnoreCaseAndCustomerNameContainingIgnoreCase(
+            String invoiceNumber,
+            String customerName);
 }

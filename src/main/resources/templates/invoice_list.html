@@ -1,14 +1,15 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Invoices</title>
-	<link rel="stylesheet" href="/css/bootstrap.min.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Invoices</title>
+<link rel="stylesheet" href="/css/bootstrap.min.css">
 </head>
 <body>
-	<header class="bg-dark text-white d-flex align-items-center py-3 px-4 mb-4 rounded">
-    	<h4 class="mb-0">Invoices</h4>
+	<header
+		class="bg-dark text-white d-flex align-items-center py-3 px-4 mb-4 rounded">
+		<h4 class="mb-0">Invoices</h4>
 	</header>
 	<div class="container mt-5">
 		<div th:if="${message}" class="alert alert-info text-center"
@@ -17,6 +18,26 @@
 		<div class="mb-3">
 			<a href="/invoice/add" class="btn btn-success">Add Invoice</a>
 		</div>
+
+		<form th:action="@{/invoices}" method="get" class="row g-3 mb-3">
+
+			<div class="col-md-4">
+				<input type="text" name="invoiceNumber" class="form-control"
+					placeholder="Invoice Number" th:value="${invoiceNumber}">
+			</div>
+
+			<div class="col-md-4">
+				<input type="text" name="customerName" class="form-control"
+					placeholder="Customer Name" th:value="${customerName}">
+			</div>
+
+			<div class="col-md-4">
+				<button type="submit" class="btn btn-primary">Search</button>
+
+				<a th:href="@{/invoices}" class="btn btn-secondary"> Reset </a>
+			</div>
+
+		</form>
 
 		<table class="table table-bordered">
 			<thead>
@@ -47,7 +68,7 @@
 							<button type="submit" class="btn btn-success"
 								onclick="return confirm('Are you sure you want to print this invoice?')">Print</button>
 						</form>
-						
+
 						<form
 							th:action="@{/invoice/delete/{invoiceNumber}(invoiceNumber=${invoice.invoiceNumber})}"
 							method="post" style="display: inline-block;">

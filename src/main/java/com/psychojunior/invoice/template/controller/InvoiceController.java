@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.psychojunior.invoice.template.entity.Invoice;
@@ -39,8 +40,12 @@ public class InvoiceController {
 	}
 
 	@GetMapping("/invoices")
-	public String getInvoiceList(Model model) {
-		List<InvoiceDto> invoiceList = invoiceService.getAllInvoiceList();
+	public String getInvoiceList(@RequestParam(required = false) String invoiceNumber,
+	        @RequestParam(required = false) String customerName, Model model) {
+	    List<InvoiceDto> invoiceList = invoiceService.searchInvoices(invoiceNumber, customerName);
+
+	    model.addAttribute("invoiceNumber", invoiceNumber);
+	    model.addAttribute("customerName", customerName);
 		model.addAttribute("invoices", invoiceList);
 		return "invoice_list";
 	}
