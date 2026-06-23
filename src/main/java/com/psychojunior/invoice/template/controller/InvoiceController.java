@@ -3,6 +3,7 @@ package com.psychojunior.invoice.template.controller;
 import java.util.List;
 
 import org.springframework.core.io.ByteArrayResource;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -40,13 +41,31 @@ public class InvoiceController {
 	}
 
 	@GetMapping("/invoices")
-	public String getInvoiceList(@RequestParam(required = false) String invoiceNumber,
-	        @RequestParam(required = false) String customerName, Model model) {
-	    List<InvoiceDto> invoiceList = invoiceService.searchInvoices(invoiceNumber, customerName);
+	public String getInvoiceList(
+			@RequestParam(required = false) String invoiceNumber,
+	        @RequestParam(required = false) String customerName, 
+	        @RequestParam(defaultValue = "0") int page,
+	        @RequestParam(defaultValue = "10") int size,
+	        @RequestParam(defaultValue = "invoiceDate") String sortField,
+	        @RequestParam(defaultValue = "desc") String sortDir, Model model) {
+	    Page<InvoiceDto> invoicePage =
+	            invoiceService.searchInvoices(
+	                    invoiceNumber,
+	                    customerName,
+	                    page,
+	                    size,
+	                    sortField,
+	                    sortDir);
 
+	    model.addAttribute("invoices", invoicePage.getContent());
+	    model.addAttribute("currentPage", page);
+	    model.addAttribute("totalPages", invoicePage.getTotalPages());
+	    model.addAttribute("totalItems", invoicePage.getTotalElements());
+	    model.addAttribute("sortField", sortField);
+	    model.addAttribute("sortDir", sortDir);
+	    model.addAttribute("reverseSortDir", sortDir.equals("asc") ? "desc" : "asc");
 	    model.addAttribute("invoiceNumber", invoiceNumber);
 	    model.addAttribute("customerName", customerName);
-		model.addAttribute("invoices", invoiceList);
 		return "invoice_list";
 	}
 

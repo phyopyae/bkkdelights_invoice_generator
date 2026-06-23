@@ -1,8 +1,9 @@
 package com.psychojunior.invoice.template.repository;
 
-import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.psychojunior.invoice.template.entity.Invoice;
@@ -14,7 +15,8 @@ public interface InvoiceRepository extends JpaRepository<Invoice, Long>  {
 	
 	Optional<Invoice> findByInvoiceNumber(String invoiceNumber);
 	
-    List<Invoice> findByInvoiceNumberContainingIgnoreCaseAndCustomerNameContainingIgnoreCase(
+	Page<Invoice> findByInvoiceNumberContainingIgnoreCaseAndCustomerNameContainingIgnoreCase(
             String invoiceNumber,
-            String customerName);
+            String customerName,
+            Pageable pageable);
 }

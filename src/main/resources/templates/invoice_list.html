@@ -19,16 +19,26 @@
 			<a href="/invoice/add" class="btn btn-success">Add Invoice</a>
 		</div>
 
-		<form th:action="@{/invoices}" method="get" class="row g-3 mb-3">
+		<form th:action="@{/invoices}" method="get" class="row g-3 mb-3 align-items-end">
 
-			<div class="col-md-4">
+			<div class="col-md-3">
 				<input type="text" name="invoiceNumber" class="form-control"
 					placeholder="Invoice Number" th:value="${invoiceNumber}">
 			</div>
 
-			<div class="col-md-4">
+			<div class="col-md-3">
 				<input type="text" name="customerName" class="form-control"
 					placeholder="Customer Name" th:value="${customerName}">
+			</div>
+
+			<div class="col-md-2">
+				<label class="form-label">Page Size</label> 
+				<select name="size" class="form-select">
+					<option value="5">5</option>
+					<option value="10" selected>10</option>
+					<option value="20">20</option>
+					<option value="50">50</option>
+				</select>
 			</div>
 
 			<div class="col-md-4">
@@ -36,16 +46,47 @@
 
 				<a th:href="@{/invoices}" class="btn btn-secondary"> Reset </a>
 			</div>
-
 		</form>
 
 		<table class="table table-bordered">
 			<thead>
 				<tr>
-					<th>Invoice Number</th>
-					<th>Invoice Date</th>
-					<th>Customer Name</th>
-					<th>Total Amount</th>
+					<th><a
+						th:href="@{/invoices(
+            page=${currentPage},
+            invoiceNumber=${invoiceNumber},
+            customerName=${customerName},
+            sortField='invoiceNumber',
+            sortDir=${reverseSortDir})}">
+							Invoice Number </a></th>
+
+					<th><a
+						th:href="@{/invoices(
+            page=${currentPage},
+            invoiceNumber=${invoiceNumber},
+            customerName=${customerName},
+            sortField='invoiceDate',
+            sortDir=${reverseSortDir})}">
+							Invoice Date </a></th>
+
+					<th><a
+						th:href="@{/invoices(
+            page=${currentPage},
+            invoiceNumber=${invoiceNumber},
+            customerName=${customerName},
+            sortField='customerName',
+            sortDir=${reverseSortDir})}">
+							Customer Name </a></th>
+
+					<th><a
+						th:href="@{/invoices(
+            page=${currentPage},
+            invoiceNumber=${invoiceNumber},
+            customerName=${customerName},
+            sortField='totalAmount',
+            sortDir=${reverseSortDir})}">
+							Total Amount </a></th>
+
 					<th>Actions</th>
 				</tr>
 			</thead>
@@ -78,6 +119,46 @@
 				</tr>
 			</tbody>
 		</table>
+		<nav th:if="${totalPages > 1}">
+			<ul class="pagination justify-content-center">
+
+				<li class="page-item"
+					th:classappend="${currentPage == 0} ? 'disabled'"><a
+					class="page-link"
+					th:href="@{/invoices(
+                    page=${currentPage - 1},
+                    invoiceNumber=${invoiceNumber},
+                    customerName=${customerName},
+                    sortField=${sortField},
+                    sortDir=${sortDir})}">
+						Previous </a></li>
+
+				<li class="page-item"
+					th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
+					th:classappend="${i == currentPage} ? 'active'"><a
+					class="page-link" th:text="${i + 1}"
+					th:href="@{/invoices(
+                    page=${i},
+                    invoiceNumber=${invoiceNumber},
+                    customerName=${customerName},
+                    sortField=${sortField},
+                    sortDir=${sortDir})}">
+				</a></li>
+
+				<li class="page-item"
+					th:classappend="${currentPage + 1 >= totalPages} ? 'disabled'">
+					<a class="page-link"
+					th:href="@{/invoices(
+                    page=${currentPage + 1},
+                    invoiceNumber=${invoiceNumber},
+                    customerName=${customerName},
+                    sortField=${sortField},
+                    sortDir=${sortDir})}">
+						Next </a>
+				</li>
+
+			</ul>
+		</nav>
 	</div>
 	<!-- Footer -->
 	<footer class="bg-light text-dark text-center mt-5 py-3 border-top">

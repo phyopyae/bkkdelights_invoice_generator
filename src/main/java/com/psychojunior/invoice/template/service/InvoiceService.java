@@ -6,6 +6,10 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.psychojunior.invoice.template.entity.Invoice;
@@ -189,13 +193,19 @@ public class InvoiceService {
 		return "Invoice_".concat(invoiceNumber.concat(".").concat(INVOICE_FILE_TYPE_EXCEL));
 	}
 
-	public List<InvoiceDto> searchInvoices(String invoiceNumber, String customerName) {
+	public Page<InvoiceDto> searchInvoices(String invoiceNumber, String customerName, int page, int size,
+			String sortField, String sortDir) {
 
 		String invNo = invoiceNumber == null ? "" : invoiceNumber;
 		String custName = customerName == null ? "" : customerName;
 
-		return invoiceRepo.findByInvoiceNumberContainingIgnoreCaseAndCustomerNameContainingIgnoreCase(invNo, custName)
-				.stream().map(this::convertToInvoiceDto).toList();
+		Sort sort = sortDir.equalsIgnoreCase("asc") ? Sort.by(sortField).ascending() : Sort.by(sortField).descending();
+
+		Pageable pageable = PageRequest.of(page, size, sort);
+
+		return invoiceRepo
+				.findByInvoiceNumberContainingIgnoreCaseAndCustomerNameContainingIgnoreCase(invNo, custName, pageable)
+				.map(this::convertToInvoiceDto);
 	}
 
 }
