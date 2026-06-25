@@ -28,17 +28,17 @@
 						</div>
 						<div class="form-group col-md-3">
 							<label for="invoiceDate">Invoice Date</label> <input type="date"
-								class="form-control" id="invoiceDate" th:field="*{invoiceDate}">
+								class="form-control" id="invoiceDate" th:field="*{invoiceDate}" required>
 						</div>
 						<div class="form-group col-md-3">
 							<label for="customerName">Customer Name</label> <input
 								type="text" class="form-control" id="customerName"
-								th:field="*{customerName}" placeholder="Customer Name">
+								th:field="*{customerName}" placeholder="Customer Name" required>
 						</div>
 						<div class="form-group col-md-3">
 							<label for="contactNumber">Contact Number</label> <input
 								type="text" class="form-control" id="contactNumber"
-								th:field="*{contactNumber}" placeholder="Contact Number">
+								th:field="*{contactNumber}" placeholder="Contact Number" required>
 						</div>
 					</div>
 
@@ -46,7 +46,7 @@
 						<div class="form-group col-md-6">
 							<label for="customerAddress">Customer Address</label>
 							<textarea class="form-control" rows="1"
-								th:field="*{customerAddress}" placeholder="Customer Address"></textarea>
+								th:field="*{customerAddress}" placeholder="Customer Address" required></textarea>
 						</div>
 						<div class="form-group col-md-3">
 							<label for="depositAmount">Deposit Amount</label> <input
