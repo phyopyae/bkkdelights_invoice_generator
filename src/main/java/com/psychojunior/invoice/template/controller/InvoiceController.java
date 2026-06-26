@@ -59,6 +59,7 @@ public class InvoiceController {
 
 	    model.addAttribute("invoices", invoicePage.getContent());
 	    model.addAttribute("currentPage", page);
+	    model.addAttribute("size", size);
 	    model.addAttribute("totalPages", invoicePage.getTotalPages());
 	    model.addAttribute("totalItems", invoicePage.getTotalElements());
 	    model.addAttribute("sortField", sortField);
@@ -85,6 +86,8 @@ public class InvoiceController {
 	@GetMapping("/invoice/add")
 	public String showAddInvoiceForm(Model model) {
 		InvoiceDto invoice = new InvoiceDto();
+		String invoiceNumber = invoiceService.generateInvoiceNumber();
+		invoice.setInvoiceNumber(invoiceNumber);
 		model.addAttribute("invoice", invoice);
 		return "invoice_add";
 	}

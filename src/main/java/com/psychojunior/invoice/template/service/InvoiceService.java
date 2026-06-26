@@ -1,6 +1,8 @@
 package com.psychojunior.invoice.template.service;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -11,13 +13,16 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.psychojunior.invoice.template.entity.Invoice;
 import com.psychojunior.invoice.template.entity.InvoiceItem;
+import com.psychojunior.invoice.template.entity.InvoiceSequence;
 import com.psychojunior.invoice.template.model.InvoiceDto;
 import com.psychojunior.invoice.template.model.InvoiceItemDto;
 import com.psychojunior.invoice.template.repository.InvoiceItemRepository;
 import com.psychojunior.invoice.template.repository.InvoiceRepository;
+import com.psychojunior.invoice.template.repository.InvoiceSequenceRepository;
 
 @Service
 public class InvoiceService {
@@ -30,10 +35,12 @@ public class InvoiceService {
 
 	private final InvoiceRepository invoiceRepo;
 	private final InvoiceItemRepository invoiceItemRepo;
+	private final InvoiceSequenceRepository invoiceSeqRepo;
 
-	public InvoiceService(InvoiceRepository invoiceRepo, InvoiceItemRepository invoiceItemRepo) {
+	public InvoiceService(InvoiceRepository invoiceRepo, InvoiceItemRepository invoiceItemRepo, InvoiceSequenceRepository invoiceSeqRepo) {
 		this.invoiceRepo = invoiceRepo;
 		this.invoiceItemRepo = invoiceItemRepo;
+		this.invoiceSeqRepo = invoiceSeqRepo;
 	}
 
 	public List<InvoiceDto> getAllInvoiceList() {
@@ -46,8 +53,10 @@ public class InvoiceService {
 	}
 
 	public InvoiceDto save(InvoiceDto invoiceDto) {
+		String invoiceNo = invoiceDto.getInvoiceNumber();
 		saveInvoice(invoiceDto);
-		saveInvoiceItem(invoiceDto.getInvoiceNumber(), invoiceDto.getItemsList());
+		saveInvoiceItem(invoiceNo, invoiceDto.getItemsList());
+		saveInvoiceSequence(invoiceNo);
 		return invoiceDto;
 	}
 
@@ -63,6 +72,23 @@ public class InvoiceService {
 		invoice.setInvoiceDate(invoiceDto.getInvoiceDate());
 		invoice.setPrinted(false);
 		invoiceRepo.save(invoice);
+	}
+	
+	private void saveInvoiceSequence(String invoiceNo) {
+		String lastNumber = invoiceNo.length() >= 4
+		        ? invoiceNo.substring(invoiceNo.length() - 4)
+		        : invoiceNo;
+		String yearMonth = invoiceNo.substring(3, 9);
+	    InvoiceSequence seq = invoiceSeqRepo
+	            .findById(yearMonth)
+	            .orElseGet(() -> {
+	                InvoiceSequence newSeq = new InvoiceSequence();
+	                newSeq.setInvoiceMonth(yearMonth);
+	                newSeq.setLastNumber(0L);
+	                return newSeq;
+	            });
+	    seq.setLastNumber(Long.parseLong(lastNumber));
+		invoiceSeqRepo.save(seq);
 	}
 
 	private InvoiceDto convertToInvoiceDto(Invoice invoice) {
@@ -206,6 +232,25 @@ public class InvoiceService {
 		return invoiceRepo
 				.findByInvoiceNumberContainingIgnoreCaseAndCustomerNameContainingIgnoreCase(invNo, custName, pageable)
 				.map(this::convertToInvoiceDto);
+	}
+	
+	@Transactional
+	public String generateInvoiceNumber() {
+
+	    String yearMonth = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMM"));
+
+	    InvoiceSequence seq = invoiceSeqRepo
+	            .findById(yearMonth)
+	            .orElseGet(() -> {
+	                InvoiceSequence newSeq = new InvoiceSequence();
+	                newSeq.setInvoiceMonth(yearMonth);
+	                newSeq.setLastNumber(0L);
+	                return newSeq;
+	            });
+
+	    long nextNumber = seq.getLastNumber() + 1;
+	    
+	    return String.format("INV%s%04d", yearMonth, nextNumber);
 	}
 
 }

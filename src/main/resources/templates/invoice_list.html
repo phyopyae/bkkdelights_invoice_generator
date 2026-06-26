@@ -7,19 +7,35 @@
 <link rel="stylesheet" href="/css/bootstrap.min.css">
 </head>
 <body>
-	<header
-		class="bg-dark text-white d-flex align-items-center py-3 px-4 mb-4 rounded">
-		<h4 class="mb-0">Invoices</h4>
-	</header>
-	<div class="container mt-5">
+	<nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4 rounded">
+		<div class="container-fluid">
+			<a class="navbar-brand" th:href="@{/}">Home</a>
+
+			<button class="navbar-toggler" type="button"
+				data-bs-toggle="collapse" data-bs-target="#navbarMenu">
+				<span class="navbar-toggler-icon"></span>
+			</button>
+
+			<div class="collapse navbar-collapse" id="navbarMenu">
+				<ul class="navbar-nav ms-auto">
+					<li class="nav-item"><a class="nav-link"
+						th:href="@{/invoices}">Invoices</a></li>
+					<li class="nav-item"><a class="nav-link" th:href="@{/report}">Report</a>
+					</li>
+				</ul>
+			</div>
+		</div>
+	</nav>
+	<div class="container mt-4">
+		<h4 class="mb-0">Invoice List</h4>
+		<br></br>
+		<a href="/invoice/add" class="btn btn-success">Add Invoice</a>
+		<br></br>
 		<div th:if="${message}" class="alert alert-info text-center"
 			role="alert" th:text="${message}"></div>
 
-		<div class="mb-3">
-			<a href="/invoice/add" class="btn btn-success">Add Invoice</a>
-		</div>
-
-		<form th:action="@{/invoices}" method="get" class="row g-3 mb-3 align-items-end">
+		<form th:action="@{/invoices}" method="get"
+			class="row g-3 mb-3 align-items-end">
 
 			<div class="col-md-3">
 				<input type="text" name="invoiceNumber" class="form-control"
@@ -32,19 +48,19 @@
 			</div>
 
 			<div class="col-md-2">
-				<label class="form-label">Page Size</label> 
-				<select name="size" class="form-select">
-					<option value="5">5</option>
-					<option value="10" selected>10</option>
-					<option value="20">20</option>
-					<option value="50">50</option>
+				<label class="form-label">Page Size</label> <select name="size"
+					class="form-select">
+				    <option value="5"  th:selected="${size == 5}">5</option>
+				    <option value="10" th:selected="${size == 10}">10</option>
+				    <option value="20" th:selected="${size == 20}">20</option>
+				    <option value="50" th:selected="${size == 50}">50</option>
 				</select>
 			</div>
 
 			<div class="col-md-4">
 				<button type="submit" class="btn btn-primary">Search</button>
 
-				<a th:href="@{/invoices}" class="btn btn-secondary"> Reset </a>
+				<a th:href="@{/invoices}" class="btn btn-secondary"> Reset </a>\
 			</div>
 		</form>
 
@@ -54,6 +70,7 @@
 					<th><a
 						th:href="@{/invoices(
             page=${currentPage},
+            size=${size},
             invoiceNumber=${invoiceNumber},
             customerName=${customerName},
             sortField='invoiceNumber',
@@ -63,6 +80,7 @@
 					<th><a
 						th:href="@{/invoices(
             page=${currentPage},
+            size=${size},
             invoiceNumber=${invoiceNumber},
             customerName=${customerName},
             sortField='invoiceDate',
@@ -72,6 +90,7 @@
 					<th><a
 						th:href="@{/invoices(
             page=${currentPage},
+            size=${size},
             invoiceNumber=${invoiceNumber},
             customerName=${customerName},
             sortField='customerName',
@@ -81,6 +100,7 @@
 					<th><a
 						th:href="@{/invoices(
             page=${currentPage},
+            size=${size},
             invoiceNumber=${invoiceNumber},
             customerName=${customerName},
             sortField='totalAmount',
@@ -127,6 +147,7 @@
 					class="page-link"
 					th:href="@{/invoices(
                     page=${currentPage - 1},
+                    size=${size},
                     invoiceNumber=${invoiceNumber},
                     customerName=${customerName},
                     sortField=${sortField},
@@ -139,6 +160,7 @@
 					class="page-link" th:text="${i + 1}"
 					th:href="@{/invoices(
                     page=${i},
+                    size=${size},
                     invoiceNumber=${invoiceNumber},
                     customerName=${customerName},
                     sortField=${sortField},
@@ -150,6 +172,7 @@
 					<a class="page-link"
 					th:href="@{/invoices(
                     page=${currentPage + 1},
+                    size=${size},
                     invoiceNumber=${invoiceNumber},
                     customerName=${customerName},
                     sortField=${sortField},
