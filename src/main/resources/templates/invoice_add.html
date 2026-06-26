@@ -40,7 +40,7 @@
 						<div class="form-group col-md-3">
 							<label for="invoiceNumber">Invoice Number</label> <input
 								type="text" class="form-control" id="invoiceNumber"
-								th:field="*{invoiceNumber}" placeholder="Invoice Number">
+								th:field="*{invoiceNumber}" placeholder="Invoice Number" readonly>
 						</div>
 						<div class="form-group col-md-3">
 							<label for="invoiceDate">Invoice Date</label> <input type="date"
@@ -128,11 +128,8 @@
 					</table>
 
 					<!-- Buttons for saving and printing -->
-					<a href="/invoices" class="btn btn-secondary mt-3">Back to
-						Invoices List</a>
+					<a href="/invoices" class="btn btn-secondary mt-3">Back</a>
 					<button type="submit" name="save" class="btn btn-primary mt-3">Save</button>
-					<button type="submit" name="print" class="btn btn-secondary mt-3"
-						onclick="return confirm('Are you sure you want to print this invoice?')">Print</button>
 				</form>
 			</div>
 		</section>

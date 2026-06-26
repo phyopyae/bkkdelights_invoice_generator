@@ -99,12 +99,6 @@ public class InvoiceController {
 		return "redirect:/invoices";
 	}
 
-	@PostMapping(value = "/invoice/add", params = "print")
-	public String printInvoice(@ModelAttribute InvoiceDto invoiceDto) {
-		// TODO to call print function
-		return "redirect:/invoices";
-	}
-
 	@PostMapping("/invoice/print/{invoiceNumber}")
 	public ResponseEntity<ByteArrayResource> printInvoice(@PathVariable String invoiceNumber, Model model) {
 
